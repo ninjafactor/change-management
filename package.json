@@ -1,0 +1,34 @@
+{
+  "name": "my-api",
+  "version": "0.1.0",
+  "description": "My API",
+  "main": "./bin/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ninjafactor/change-management"
+  },
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/index.js"
+  },
+  "dependencies": {
+    "babel-register": "^6.26.0",
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "~1.18.2",
+    "bunyan": "^1.8.12",
+    "compression": "^1.7.1",
+    "cookie-parser": "~1.4.3",
+    "csurf": "^1.9.0",
+    "debug": "~2.6.9",
+    "express": "~4.15.5",
+    "fs": "0.0.1-security",
+    "helmet": "^3.9.0",
+    "merge": "^1.2.0",
+    "morgan": "~1.9.0",
+    "mysql2": "^1.4.2",
+    "rootpath": "^0.1.2",
+    "sequelize": "^4.19.0",
+    "validator": "^9.2.0"
+  },
+  "license": "UNLICENSED"
+}
