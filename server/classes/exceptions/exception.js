@@ -2,10 +2,18 @@
 
 class Exception {
     
-    constructor() {
-        this.error = true;
-        this.exception = 'Exception';
-        this.message = 'An error has ocurred.';
+    /**
+     * Base exception class
+     * @param {exception} err 
+     */
+    constructor(err) {
+        if(! err) {
+            err = {};
+        }
+
+        this.name = err.name || 'Exception';
+        this.message = err.message || 'An error has ocurred.';
+        this.status = err.status || 500;
     }
 }
 

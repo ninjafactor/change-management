@@ -2,6 +2,9 @@
 
 require('rootpath')();
 const express = require('express');
+const bunyan = require('bunyan');
+const requestLogger = require('server/middlewares/requestLogger');
+const exceptionHandler = require('server/middlewares/exceptionHandler');
 
 /**
  * The api app
@@ -10,20 +13,33 @@ const express = require('express');
 function api(settings) {
   
   /**
-   * Logging
+   * Setup and init logging
    */
-  const loggingStreams = [];
-  loggingStreams.push({
-    type: 'rotating-file',
-    path: settings.logging.path +  'api.log',
-    period: settings.logging.rotatingPeriod,
-    count: settings.logging.rotatingCount
-  });
-
-  const log = require('bunyan')
-    .createLogger({
-        name: 'DSA',
-        streams: loggingStreams
+  const log = bunyan.createLogger({
+      name: settings.app.name,
+      serializers: {
+        req: requestLogger
+      },
+      streams: [
+        {
+          level: 'trace', //log trace and debug,
+          stream: process.stdout
+        },
+        {
+          level: 'info', //log warn and info
+          type: 'rotating-file',
+          path: settings.logging.path + 'api-info.log',
+          period: settings.logging.rotatingPeriod,
+          count: settings.logging.rotatingCount
+        },
+        {
+          level: 'error', //log fatal and error
+          type: 'rotating-file',
+          path: settings.logging.path + 'api-error.log',
+          period: settings.logging.rotatingPeriod,
+          count: settings.logging.rotatingCount
+        }
+      ]
     });
   log.info('Initializing');
   log.debug({ settings: settings }, 'with settings');
@@ -41,6 +57,11 @@ function api(settings) {
    */
   require('./routes')(app);
 
+  /**
+   * Exception handling
+   */
+  app.use(exceptionHandler(log));
+  
   return app;
 }
 

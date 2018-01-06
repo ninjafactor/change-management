@@ -12,8 +12,5 @@ module.exports = (app) => {
    * Root - List all APIs
    */ 
   app.route('/')
-    .get(function(req, res, next) {
-        let routes = index.getAllRoutes('/api', app._router.stack);
-        res.status(200).json(routes);
-    });
+    .get(index.getAllRoutes('/api', app._router.stack));
 }
