@@ -30,5 +30,5 @@
     "sequelize": "^4.19.0",
     "validator": "^9.2.0"
   },
-  "license": "CC-BY-SA"
+  "license": "BSD-4-Clause"
 }
