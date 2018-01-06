@@ -2,7 +2,7 @@
 
 require('rootpath')();
 const models = require('server/api/models');
-const validator = require('server/helpers/validator').validator;
+const validate = require('server/helpers/validate');
 
 /**
  * Get a user by id
@@ -17,7 +17,7 @@ exports.getUserById = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      return res.status(500).json(err);
+      next(err);
     });
 };
 
@@ -34,7 +34,7 @@ exports.getUserByEmail = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      return res.status(500).json(err);
+      next(err);
     });
 };
 
@@ -59,7 +59,7 @@ exports.putUser = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      return res.status(500).json(err);
+      next(err);
     });
 };
 
@@ -78,7 +78,7 @@ exports.deleteUser = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      return res.status(500).json(err);
+      next(err);
     });
 };
 
@@ -101,7 +101,7 @@ exports.postUser = (req, res, next) => {
       next();
     })
     .catch((err) => {
-      return res.status(500).json(err);
+      next(err);
     });
 };
 
@@ -111,29 +111,26 @@ exports.postUser = (req, res, next) => {
  * @param {*} res 
  * @param {*} next 
  */
-exports.getUsers = function(req, res, next) {
-  
+exports.getUsers = (req, res, next) =>  {
   let stateScope = req.query.state || 'active';
   let orderByField = req.query.orderByField || 'modifiedDate';
   let orderBySort = req.query.orderBySort || 'desc';
   let orderByScope = {method: ['order', orderByField, orderBySort]};
-
-  //maybe some param validations here
-  try {
-    stateScope = validator.isIn(stateScope, ['active', 'inactive']);
-    orderByField = validator.isIn(orderByField, ['modifiedDate', 'firstName', 'lastName']);
-    orderBySort = validator.isIn(orderBySort, ['asc', 'desc']);
-  }
-  catch(err) {
-    return res.status(500).json(err);
-  }
-
-  models.users.scope(stateScope, orderByScope).findAndCountAll()
+  
+  validate.all([
+    validate.isIn(stateScope, ['active', 'inactive']),
+    validate.isIn(orderByField, ['modifiedDate', 'firstName', 'lastName']),
+    validate.isIn(orderBySort, ['asc', 'desc'])
+  ])
+    .then(() => {
+      return models.users.scope(stateScope, orderByScope).findAndCountAll()
+    })
     .then((users) => {
       res.json(users);
       next();
     }).catch((err) => {
-      return res.status(500).json(err);
+      console.log(err);
+      next(err);
     });
 };
 
@@ -143,7 +140,7 @@ exports.getUsers = function(req, res, next) {
  * @param {*} res 
  * @param {*} next 
  */
-exports.seedUsers = function(req, res, next) {
+exports.seedUsers = (req, res, next) =>  {
   let newUsers = [];
 
   for(let i = 0; i <= 10; i++) {
@@ -160,6 +157,6 @@ exports.seedUsers = function(req, res, next) {
     res.json(users);
     next();
   }).catch((err) => { 
-    return res.status(500).json({ err });
+    next(err);
   });
 };
